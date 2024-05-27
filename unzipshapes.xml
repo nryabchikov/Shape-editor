@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="21.0.2" class="java.beans.XMLDecoder">
+ <object class="java.util.HashMap">
+  <void method="put">
+   <int>0</int>
+   <object class="by.ryabchikov.lab1.model.figure.Star">
+    <void property="centerPoint">
+     <object class="by.ryabchikov.lab1.model.Point">
+      <void property="x">
+       <int>157</int>
+      </void>
+      <void property="y">
+       <int>140</int>
+      </void>
+     </object>
+    </void>
+    <void property="innerRadius">
+     <int>20</int>
+    </void>
+    <void property="numberOfPoints">
+     <int>5</int>
+    </void>
+    <void property="outerRadius">
+     <int>30</int>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <int>1</int>
+   <object class="by.ryabchikov.lab1.model.figure.polygons.Triangle">
+    <void property="firstPoint">
+     <object class="by.ryabchikov.lab1.model.Point">
+      <void property="x">
+       <int>613</int>
+      </void>
+      <void property="y">
+       <int>270</int>
+      </void>
+     </object>
+    </void>
+    <void property="secondPoint">
+     <object class="by.ryabchikov.lab1.model.Point">
+      <void property="x">
+       <int>887</int>
+      </void>
+      <void property="y">
+       <int>445</int>
+      </void>
+     </object>
+    </void>
+    <void property="thirdPoint">
+     <object class="by.ryabchikov.lab1.model.Point">
+      <void property="x">
+       <int>616</int>
+      </void>
+      <void property="y">
+       <int>603</int>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <int>2</int>
+   <object class="by.ryabchikov.lab1.model.figure.Star">
+    <void property="centerPoint">
+     <object class="by.ryabchikov.lab1.model.Point">
+      <void property="x">
+       <int>244</int>
+      </void>
+      <void property="y">
+       <int>484</int>
+      </void>
+     </object>
+    </void>
+    <void property="innerRadius">
+     <int>45</int>
+    </void>
+    <void property="numberOfPoints">
+     <int>7</int>
+    </void>
+    <void property="outerRadius">
+     <int>30</int>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

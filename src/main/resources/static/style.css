@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    height: 100vh;
+}
+
+canvas {
+    border: 1px solid #000;
+    background-color: #f0f0f0;
+    width: 70vw;
+    height: 90vh;
+}
+
+.plugins {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 20px;
+    margin-right: 20px;
+}
+
+.plugin-button {
+    margin-bottom: 10px;
+}
