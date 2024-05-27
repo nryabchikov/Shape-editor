@@ -1,15 +1,19 @@
-package by.ryabchikov.lab1.figure.polygon.quadrangle;
+package by.ryabchikov.lab1.model.figure.polygons.quadrangles;
 
 import by.ryabchikov.lab1.model.Point;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public class Parallelogram extends Quadrangle {
+@NoArgsConstructor
+@Data
+public class Parallelogram extends QuadrangleAbstract {
     protected double angle;
     public Parallelogram(Point startPoint, int width, int height, double angle) {
         super(startPoint, width, height);
         this.angle = angle;
     }
 
-    protected Point[] getPoints() {
+    public Point[] getPoints() {
         Point[] points = new Point[4];
         double radianAngle = Math.toRadians(angle);
         Point secondPoint = new Point(startPoint.getX() + width, startPoint.getY());
@@ -22,14 +26,5 @@ public class Parallelogram extends Quadrangle {
         points[1] = thirdPoint;
         points[2] = fourthPoint;
         return points;
-    }
-
-    @Override
-    public String draw() {
-        Point[] points = getPoints();
-        return "<svg height=\"700\" width=\"700\">" +
-                "<polygon points=\"" + points[0].getX() + "," + points[0].getY() + " " + points[1].getX() + "," +
-                points[1].getY() + " " + points[2].getX() + "," + points[2].getY() + " " + points[3].getX() + "," +
-                points[3].getY() + "\" style=\"fill:lime;stroke:purple;stroke-width:1\" />" + "</svg>";
     }
 }
