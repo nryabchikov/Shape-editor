@@ -1,63 +1,74 @@
 package by.ryabchikov.lab1.controller;
 
-import by.ryabchikov.lab1.Drawable;
-import by.ryabchikov.lab1.figure.Line;
-import by.ryabchikov.lab1.model.Point;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import by.ryabchikov.lab1.service.FigureService;
+import by.ryabchikov.lab1.model.MapOfFigures;
+import by.ryabchikov.lab1.util.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 public class FigureController {
-
-    private final FigureService figureService;
-
-    @Autowired
-    public FigureController(FigureService figureService) {
-        this.figureService = figureService;
+    private boolean isStarPluginLoaded;
+    public static boolean isArchivePluginLoaded;
+    private static boolean isFriendPluginLoaded;
+    @DeleteMapping("/deleteFigure/{figureIndex}")
+    public ResponseEntity<String> deleteFigure(@PathVariable int figureIndex) {
+        MapOfFigures.mapOfFigures.remove(figureIndex);
+        return ResponseEntity.ok("Figure with index " + figureIndex + " deleted successfully");
     }
 
-    @GetMapping("/drawLine")
-    public String drawLine() {
-        Point startPoint = new Point(50, 50);
-        Point endPoint = new Point(200, 200);
-        Drawable line = new Line(startPoint, endPoint);
-        return line.draw();
+    @PostMapping("/figure/{id}/color")
+    public ResponseEntity<String> changeFigureColor(@PathVariable int id, @RequestParam String color) {
+        MapOfFigures.mapOfFigures.get(id).setColor(color);
+        return ResponseEntity.ok().body("Color updated successfully");
+    }
+    @GetMapping("/shapes")
+    public List<String> getShapes() throws IOException {
+        ClassScanner scanner = new ClassScanner();
+        List<String> classNames = scanner.getClassNames();
+        Collections.sort(classNames);
+        if (isStarPluginLoaded) {
+            List<String> list = JarScanner.getClassNamesFromJarFile(new File("src/main/resources/plugin/updated_star.jar"));
+            classNames.addAll(list);
+        }
+        return classNames;
+    }
+    @PostMapping("/upload-plugin")
+    public String uploadPlugin(@RequestParam("filePath") String filePath) {
+        try {
+            PluginLoader pluginLoader = new PluginLoader();
+            pluginLoader.loadPlugin(filePath);
+            isStarPluginLoaded = true;
+            return "Плагин успешно загружен";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка загрузки плагина";
+        }
     }
 
-    @GetMapping("/drawTriangle")
-    public String drawTriangle() {
-        return figureService.drawTriangle();
+    @PostMapping("/uploadPlugin")
+    public String uploadPlugin5() {
+        try {
+            isArchivePluginLoaded = true;
+            return "Плагин успешно загружен";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка загрузки плагина";
+        }
     }
 
-    @GetMapping("/drawSquare")
-    public String drawSquare() {
-        return figureService.drawSquare();
-    }
-
-    @GetMapping("/drawRectangle")
-    public String drawRectangle() {
-        return figureService.drawRectangle();
-    }
-
-    @GetMapping("/drawCircle")
-    public String drawCircle() {
-        return figureService.drawCircle();
-    }
-
-    @GetMapping("/drawParallelogram")
-    public String drawParallelogram() {
-        return figureService.drawParallelogram();
-    }
-
-    @GetMapping("/drawRhombus")
-    public String drawRhombus() {
-        return figureService.drawRhombus();
-    }
-
-    @GetMapping("/draw")
-    public String draw() {
-        return figureService.draw();
+    @PostMapping("/uploadFriendPlugin")
+    public String uploadFriendPlugin() {
+        try {
+            isFriendPluginLoaded = true;
+            return "Плагин друга загружен.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ошибка загрузки плагина друга.";
+        }
     }
 }

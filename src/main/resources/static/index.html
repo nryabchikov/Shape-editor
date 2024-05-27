@@ -2,9 +2,308 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Hello</h1>
+<!--<canvas id="myCanvas" width="700" height="700"></canvas>-->
+<!--<input type="file" id="pluginInput" accept=".jar">-->
+<!--<button onclick="uploadPlugin()">Выбрать плагин</button>-->
+
+<!--<input type="file" id="pluginInput1" accept=".jar">-->
+<!--<button onclick="uploadPlugin5()">Выбрать плагин для 5</button>-->
+
+
+<div class="container">
+    <canvas id="myCanvas"></canvas>
+    <div class="plugins">
+        <div class="plugin-input-container">
+            <input type="file" id="pluginInput" accept=".jar">
+            <button class="plugin-button" onclick="uploadPlugin()">Плагин со звездой</button>
+        </div>
+        <div class="plugin-input-container">
+            <input type="file" id="pluginInput1" accept=".jar">
+            <button class="plugin-button" onclick="uploadPlugin5()">Плагин архивации</button>
+        </div>
+        <div class="plugin-input-container">
+            <input type="file" id="friendPluginInput" accept=".jar">
+            <button class="plugin-button" onclick="uploadFriendPlugin()">Плагин друга</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function uploadPlugin() {
+        const fileInput = document.getElementById('pluginInput');
+        const selectedFile = fileInput.files[0];
+
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('filePath', selectedFile.name); // Отправляем только имя файла
+
+            fetch('/upload-plugin', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Путь к файлу успешно отправлен');
+                    } else {
+                        console.error('Ошибка отправки пути к файлу:', response.status);
+                    }
+                })
+                .catch(error => console.error('Ошибка отправки пути к файлу:', error));
+        } else {
+            console.error('Файл не выбран');
+        }
+        window.location = window.location.href;
+    }
+
+    function uploadPlugin5() {
+        const fileInput = document.getElementById('pluginInput1');
+        const selectedFile = fileInput.files[0];
+
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('filePath', selectedFile.name);
+
+            fetch('/uploadPlugin', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Путь к файлу успешно отправлен');
+                    } else {
+                        console.error('Ошибка отправки пути к файлу:', response.status);
+                    }
+                })
+                .catch(error => console.error('Ошибка отправки пути к файлу:', error));
+        } else {
+            console.error('Файл не выбран');
+        }
+        window.location = window.location.href;
+    }
+
+    function uploadFriendPlugin() {
+        const fileInput = document.getElementById('friendPluginInput');
+        const selectedFile = fileInput.files[0];
+
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('filePath', selectedFile.name); // Отправляем только имя файла
+
+            fetch('/uploadFriendPlugin', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Путь к файлу успешно отправлен');
+                    } else {
+                        console.error('Ошибка отправки пути к файлу:', response.status);
+                    }
+                })
+                .catch(error => console.error('Ошибка отправки пути к файлу:', error));
+        } else {
+            console.error('Файл не выбран');
+        }
+        window.location = window.location.href;
+    }
+
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+    let clickCounter = 0;
+    let points = [];
+    let selectedShape = '';
+
+    canvas.addEventListener('mousedown', handleMouseDown);
+
+    function handleMouseDown(event) {
+        const x = event.clientX - canvas.getBoundingClientRect().left;
+        const y = event.clientY - canvas.getBoundingClientRect().top;
+
+        if (clickCounter === 0) {
+            displayMenu(event.clientX, event.clientY);
+        } else {
+            points.push({x, y});
+        }
+
+        clickCounter++;
+        if (selectedShape === '6' && clickCounter === 4) {
+            sendDataToServer(points);
+            clickCounter = 0;
+            points = [];
+        }
+
+        if (selectedShape === '5' && clickCounter === 2) {
+            const width = prompt('Введите ширину квадрата:');
+            const intPointData = {
+                points: points,
+                side: width
+            };
+            sendDataToServer(intPointData);
+            clickCounter = 0;
+            points = [];
+        }
+
+        if (selectedShape === '1' && clickCounter === 2) {
+            const radius = prompt('Введите радиус круга: ');
+            const intPointData = {
+                points: points,
+                side: radius
+            };
+            sendDataToServer(intPointData);
+            clickCounter = 0;
+            points = [];
+        }
+
+        if (selectedShape === '3' && clickCounter === 2) {
+            const width = prompt('Введите ширину прямоугольника: ');
+            const height = prompt('Введите высоту прямоугольника: ');
+            const doubleIntPointData = {
+                points: points,
+                width: width,
+                height: height
+            }
+            sendDataToServer(doubleIntPointData);
+            clickCounter = 0;
+            points = [];
+        }
+
+        if (selectedShape === '4' && clickCounter === 2) {
+            const width = prompt('Введите сторону ромба: ');
+            const angle = prompt('Введите угол ромба: ');
+            const doubleIntPointData = {
+                points: points,
+                width: width,
+                height: angle
+            }
+            sendDataToServer(doubleIntPointData);
+            clickCounter = 0;
+            points = [];
+        }
+
+        if (selectedShape === '2' && clickCounter === 2) {
+            const width = prompt('Введите ширину параллелограмма: ');
+            const height = prompt('Введите высоту параллелограмма: ');
+            const angle = prompt('Введите угол параллелограмма: ');
+            const thirdIntPointData = {
+                points: points,
+                width: width,
+                height: height,
+                angle: angle
+            }
+            sendDataToServer(thirdIntPointData);
+            clickCounter = 0;
+            points = [];
+        }
+
+        if (selectedShape === '7' && clickCounter === 2) {
+            const amount = prompt('Введите количество вершин звезды: ');
+            const outerRadius = prompt('Введите внешний радиус звезды: ');
+            const innerRadius = prompt('Введите внутренний радиус звезды: ');
+
+            const thirdIntPointData = {
+                points: points,
+                width: amount,
+                height: outerRadius,
+                angle: innerRadius
+            }
+            sendDataToServer(thirdIntPointData);
+            clickCounter = 0;
+            points = [];
+        }
+    }
+
+    function sendDataToServer(data) {
+        const xhr = new XMLHttpRequest();
+        let url;
+        if (selectedShape === '6') {
+            url = 'http://localhost:8080/buildTriangle';
+        } else if (selectedShape === '5') {
+            url = 'http://localhost:8080/buildSquare';
+        } else if (selectedShape === '1') {
+            url = 'http://localhost:8080/buildCircle';
+        } else if (selectedShape === '3') {
+            url = 'http://localhost:8080/buildRectangle';
+        } else if (selectedShape === '4') {
+            url = 'http://localhost:8080/buildRhombus';
+        } else if (selectedShape === '2') {
+            url = 'http://localhost:8080/buildParallelogram';
+        } else if (selectedShape === '7') {
+            url = 'http://localhost:8080/buildStar'
+        }
+
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-type', 'application/json');
+
+        xhr.onreadystatechange = function () {
+            if (selectedShape === '6') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Треугольник построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawTriangle';
+                }
+            } else if (selectedShape === '5') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Квадрат построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawSquare';
+                }
+            } else if (selectedShape === '1') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Круг построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawCircle';
+                }
+            } else if (selectedShape === '3') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Прямоугольник построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawRectangle';
+                }
+            } else if (selectedShape === '4') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Ромб построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawRhombus';
+                }
+            } else if (selectedShape === '2') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Параллелограмм построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawParallelogram';
+                }
+            } else if (selectedShape === '7') {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    console.log('Звезда построен на сервере');
+                    window.location.href = 'http://localhost:8080/drawStar';
+                }
+            }
+        }
+        xhr.send(JSON.stringify(data));
+    }
+
+    // function displayMenu() {
+    //     selectedShape = prompt('Выберите фигуру для рисования:\n1. Треугольник\n2. Квадрат\n3. Круг\n' +
+    //         '4. Прямоугольник\n5. Ромб\n6. Параллелограмм\nВведите номер:');
+    // }
+
+    function displayMenu() {
+        // Отправить AJAX-запрос на сервер для получения списка фигур
+        fetch('/shapes')
+            .then(response => response.json())
+            .then(shapes => {
+                // Генерируем сообщение с вариантами фигур
+                let message = 'Выберите фигуру для рисования:\n';
+                shapes.forEach((shape, index) => {
+                    message += `${index + 1}. ${shape}\n`;
+                });
+
+                // Запрашиваем у пользователя выбор фигуры
+                selectedShape = prompt(message);
+
+                // Теперь можно использовать выбранную фигуру для выполнения нужной операции
+            })
+            .catch(error => console.error('Ошибка получения списка фигур:', error));
+    }
+
+</script>
 </body>
 </html>
