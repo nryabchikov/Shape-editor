@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw Shapes</title>
+</head>
+<body>
+
+<div id="svg-container" th:utext="${svgString}"></div>
+
+<div id="context-menu" style="display: none; position: absolute; background-color: #fff; border: 1px solid #ccc; padding: 5px;">
+    <input type="color" id="color-picker" style="margin-bottom: 5px;">
+    <button id="change-color">Изменить цвет</button>
+    <button id="delete-figure">Удалить</button>
+</div>
+
+<button id="serialize-btn">Serialize</button>
+
+<script>
+    const svgContainer = document.getElementById("svg-container");
+    const contextMenu = document.getElementById("context-menu");
+    let targetFigure;
+
+    svgContainer.addEventListener("contextmenu", function(event) {
+        event.preventDefault();
+
+
+        const x = event.clientX;
+        const y = event.clientY;
+
+        contextMenu.style.display = "block";
+        contextMenu.style.left = x + "px";
+        contextMenu.style.top = y + "px";
+        // сохранение текущей фигуры(кликнули)
+        targetFigure = event.target;
+
+        document.getElementById("change-color").addEventListener("click", changeColorHandler);
+        document.getElementById("delete-figure").addEventListener("click", deleteFigureHandler);
+    });
+
+    document.addEventListener("click", function(event) {
+        if (event.target !== contextMenu && event.target !== svgContainer) {
+            contextMenu.style.display = "none";
+            document.getElementById("change-color").removeEventListener("click", changeColorHandler);
+            document.getElementById("delete-figure").removeEventListener("click", deleteFigureHandler);
+        }
+    });
+
+    function changeColorHandler() {
+        const selectedColor = document.getElementById("color-picker").value;
+        targetFigure.style.fill = selectedColor;
+        contextMenu.style.display = "none";
+
+        //получение из (figure-0 -> 0)
+        const figureIndex = targetFigure.getAttribute("id").split("-")[1];
+
+        const formData = new FormData();
+        formData.append('color', selectedColor);
+
+        fetch(`/figure/${figureIndex}/color`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+    }
+
+
+
+    function deleteFigureHandler() {
+        const figureIndex = targetFigure.getAttribute("id").split("-")[1];
+        targetFigure.remove();
+        contextMenu.style.display = "none";
+
+        fetch('/deleteFigure/' + figureIndex, {
+            method: 'DELETE'
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete figure');
+            }
+            console.log('Figure deleted successfully');
+        }).catch(error => {
+            console.error('Error deleting figure:', error);
+        });
+    }
+
+    document.getElementById("serialize-btn").addEventListener("click", function() {
+        fetch("/serialize/binary", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Serialization failed');
+                }
+                console.log('Serialization successful');
+            })
+            .catch(error => {
+                console.error('Error during serialization:', error);
+            });
+    });
+
+    document.getElementById("serialize-btn").addEventListener("click", function() {
+        fetch("/serialize/xml", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Serialization failed');
+                }
+                console.log('Serialization successful');
+            })
+            .catch(error => {
+                console.error('Error during serialization:', error);
+            });
+    });
+</script>
+</body>
+</html>
